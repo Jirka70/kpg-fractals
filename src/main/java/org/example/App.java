@@ -1,6 +1,8 @@
 package org.example;
 
 import javafx.application.Application;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -9,6 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.fractals.*;
+
+import javax.script.Bindings;
 
 
 public class App extends Application {
@@ -40,38 +44,44 @@ public class App extends Application {
         ToggleGroup toggleGroup = new ToggleGroup();
         RadioButton gosperBox = new RadioButton("Gosper");
         gosperBox.setToggleGroup(toggleGroup);
+
         RadioButton islandsAndLakes = new RadioButton("Islands and lakes");
         islandsAndLakes.setToggleGroup(toggleGroup);
+
         RadioButton koch = new RadioButton("Koch");
         koch.setToggleGroup(toggleGroup);
+
+
         RadioButton sierpinskiArrowhead = new RadioButton("Sierpinski arrowhead");
         sierpinskiArrowhead.setToggleGroup(toggleGroup);
+
         RadioButton tree = new RadioButton("Tree");
         tree.setToggleGroup(toggleGroup);
+
         RadioButton flake = new RadioButton("Snowflake");
         flake.setToggleGroup(toggleGroup);
-        ComboBox<RadioButton> comboBox = new ComboBox<>();
-        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        toggleGroup.selectedToggleProperty().addListener((obs,old,newv) -> fractalModel.setFractal(((RadioButton)newv.getToggleGroup().getSelectedToggle()).getText()));
+
+        /*toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             comboBox.setPromptText(null);
             if (newValue != null) {
                 comboBox.setPromptText(((RadioButton) newValue).getText());
                 fractalModel.fractalProperty().set(((RadioButton) newValue).getText());
             }
-        });
+        });*/
 
-        comboBox.prefWidthProperty().bind(rightBox.widthProperty().multiply(.8));
-        comboBox.getItems().addAll(gosperBox, islandsAndLakes, koch, sierpinskiArrowhead, tree, flake);
         rightBox.setAlignment(Pos.CENTER);
         CheckBox colored = new CheckBox("Color fractal");
         Button apply = new Button("Apply");
         fractalModel.hsbEffectProperty().bind(colored.selectedProperty());
-        rightBox.getChildren().addAll(comboBox, colored, apply);
+        rightBox.getChildren().addAll(gosperBox, islandsAndLakes, koch, sierpinskiArrowhead, tree, flake, new Separator(), colored, apply);
         apply.setOnAction(e -> displayFractal());
 
         return rightBox;
     }
 
     private void displayFractal() {
+        System.out.println(fractalModel.getFractal());
         String fractal = fractalModel.getFractal();
         if (fractal == null) {
             return;
